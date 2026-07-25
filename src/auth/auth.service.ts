@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from '../database/database.service';
 import * as bcrypt from 'bcrypt';
-import * as FormData from 'form-data';
+import FormData from 'form-data';
 const IMGBB_API_KEY = process.env.IMGBB_API_KEY
 
 @Injectable()
