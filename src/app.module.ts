@@ -1,0 +1,31 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './database/database.module';
+import { UsersModule } from './users/users.module';
+import { ShopsModule } from './shops/shops.module';
+import { ProductsModule } from './products/products.module';
+import { CommentsModule } from './comments/comments.module';
+import { OrdersModule } from './orders/orders.module';
+import { ReactionsModule } from './reactions/reactions.module';
+import { DiscountsModule } from './discounts/discounts.module';
+import { SlidersModule } from './sliders/sliders.module';
+import { FeatureRequestsModule } from './feature-requests/feature-requests.module';
+import { AuthModule } from './auth/auth.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    DatabaseModule,
+    UsersModule,
+    ShopsModule,
+    ProductsModule,
+    CommentsModule,
+    OrdersModule,
+    ReactionsModule,
+    DiscountsModule,
+    SlidersModule,
+    FeatureRequestsModule,
+    AuthModule,
+  ],
+})
+export class AppModule {}
