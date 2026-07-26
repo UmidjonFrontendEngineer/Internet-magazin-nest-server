@@ -1,27 +1,16 @@
 import { Injectable, UnauthorizedException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from '../database/database.service';
-import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 @Injectable()
 export class AuthService {
-  private transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // TLS uchun false bo'lishi kerak
-    auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
-
   constructor(
     private db: DatabaseService,
     private jwtService: JwtService,
   ) { }
+
+  private resend = new Resend(process.env.RESEND_API_KEY);
 
   async sendOtp(dto: { email: string }) {
     if (!dto.email) {
@@ -51,15 +40,15 @@ export class AuthService {
     );
 
     try {
-      await this.transporter.sendMail({
-        from: '"Online Market" <umidjonsharipov283@gmail.com>',
+      await this.resend.emails.send({
+        from: 'Online Market <onboarding@resend.dev>',
         to: dto.email,
         subject: 'Online Market - Tasdiqlash kodi',
-        text: `Sizning tasdiqlash kodingiz: ${otpCode}. Kod 10 daqiqa davomida amal qiladi.`,
+        html: `<p>Sizning tasdiqlash kodingiz: <strong>${otpCode}</strong>. Kod 10 daqiqa davomida amal qiladi.</p>`,
       });
     } catch (error) {
       console.error('Email yuborishda xatolik:', error);
-      throw new BadRequestException('Emailga xat yuborib bo\'lmadi. Gmail sozlamalarini tekshiring!');
+      throw new BadRequestException('Emailga xat yuborib bo\'lmadi!');
     }
 
     return {
