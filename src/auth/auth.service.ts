@@ -11,50 +11,58 @@ export class AuthService {
   ) { }
 
   async sendOtp(dto: { email: string }) {
-    if (!dto.email) {
+    console.log("1. Funksiyaga kelgan dto:", dto);
+
+    if (!dto || !dto.email) {
+      console.log("2. Email topilmadi yoki dto bo'sh!");
       throw new BadRequestException('Email kiritilishi shart!');
     }
-  
+
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
-  
+
     let userResult = await this.db.query(
       'SELECT * FROM "Users" WHERE email = $1',
       [dto.email],
     );
-  
+
     if (userResult.rows.length === 0) {
       const defaultUserName = 'user_' + Math.random().toString(36).substring(2, 8);
-  
       await this.db.query(
         `INSERT INTO "Users" (email, "userName", image) VALUES ($1, $2, $3)`,
         [dto.email, defaultUserName, 'https://i.ibb.co/nNZrjBSD/user.png'],
       );
     }
-  
+
     await this.db.query(
       `UPDATE "Users" SET "otpCode" = $1, "otpExpires" = $2 WHERE email = $3`,
       [otpCode, expiresAt, dto.email],
     );
-  
+
     try {
-      const url = 'https://api.emailjs.com/api/v1.0/email/send';
-  
-      await axios.post(url, {
-        service_id: process.env.EMAILJS_SERVICE_ID,
-        template_id: process.env.EMAILJS_TEMPLATE_ID,
-        user_id: process.env.EMAILJS_PUBLIC_KEY,
-        template_params: {
+      const nextJsUrl = 'https://internet-magazin-panel.vercel.app/api/send-mail';
+      console.log("3. Next.js ga so'rov yuborilmoqda...", nextJsUrl);
+
+      const response = await axios.post(
+        nextJsUrl,
+        {
           email: dto.email,
-          passcode: otpCode,
+          otp: otpCode,
         },
-      });
-  
-    } catch (error) {
-      console.error('Email yuborishda xatolik:', error.response?.data || error.message);
-      throw new BadRequestException('Emailga xat yuborib bo\'lmadi. EmailJS sozlamalarini tekshiring!');
+        {
+          headers: {
+            'x-api-key': process.env.INTERNAL_API_KEY,
+          },
+        },
+      );
+
+      console.log("4. Next.js javobi:", response.data);
+
+    } catch (error: any) {
+      console.error('5. Axios / Next.js xatoligi:', error.response?.data || error.message);
+      throw new BadRequestException('Emailga xat yuborib bo\'lmadi. Next.js serverini tekshiring!');
     }
-  
+
     return {
       message: 'Tasdiqlash kodi emailingizga yuborildi!',
     };
