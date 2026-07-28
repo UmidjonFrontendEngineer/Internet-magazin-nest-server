@@ -1,11 +1,24 @@
-
 <!DOCTYPE html>
 <html lang="uz">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Online Market Startup</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/tMfcYhFc/cart.png">
+
+    <meta property="og:title" content="Online Market Startup">
+    <meta property="og:description"
+        content="A comprehensive e-commerce backend system built with Nest.js, featuring live real-time database endpoints for multiple stores and user tracking.">
+    <meta property="og:image" content="https://i.ibb.co/tMfcYhFc/cart.png">
+    <meta property="og:url" content="https://internet-magazin-nest-server.onrender.com/">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Online Market Startup">
+    <meta name="twitter:description"
+        content="A comprehensive e-commerce backend system built with Nest.js, featuring live real-time database endpoints for multiple stores and user tracking.">
+    <meta name="twitter:image" content="https://i.ibb.co/tMfcYhFc/cart.png">
     <style>
         * {
             box-sizing: border-box;
@@ -13,6 +26,12 @@
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
+
+        h1,
+        p {
+            cursor: default;
+        }
+
         body {
             background-color: #000000;
             color: #ffffff;
@@ -23,6 +42,7 @@
             min-height: 100vh;
             padding: 20px;
         }
+
         .container {
             text-align: center;
             padding: 30px 20px;
@@ -34,7 +54,11 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
             max-width: 800px;
             width: 100%;
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
         }
+
         h1 {
             font-size: 2rem;
             font-weight: 700;
@@ -43,11 +67,13 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
         p {
             color: #88888b;
             font-size: 0.95rem;
             margin-bottom: 24px;
         }
+
         .links-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -56,21 +82,28 @@
             overflow-y: auto;
             padding-right: 4px;
         }
+
         .links-grid::-webkit-scrollbar {
             width: 6px;
         }
+
         .links-grid::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 10px;
         }
+
         .links-grid::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.15);
             border-radius: 10px;
         }
+
         .links-grid::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.3);
         }
+
         a {
+            position: relative;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -83,31 +116,169 @@
             font-weight: 500;
             font-size: 0.95rem;
             transition: all 0.25s ease;
+            user-select: none;
+
+            div {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 10px;
+                height: 10px;
+                background: radial-gradient(rgba(255, 250, 250, 0.498), rgba(255, 250, 250, 0.243));
+                border-radius: 50%;
+                transform: scale(0);
+                transition: all 0.2s ease;
+            }
         }
+
         a:hover {
             background: rgba(255, 255, 255, 0.12);
             border-color: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(255, 255, 255, 0.05);
         }
+
+        .project {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #0070f3;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-family: sans-serif;
+            transition: all 0.3s ease;
+
+            &:hover {
+                border-color: rgba(255, 255, 255, 0.3);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(255, 255, 255, 0.05);
+                background: linear-gradient(135deg, #0070f3, #0073ffc6);
+            }
+        }
+
+        .shadow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1000000;
+        }
+
+        .shadow-cursor {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(rgb(255, 255, 255, 0.08), rgba(255, 255, 255, 0));
+            transition: all 0.1s ease;
+        }
     </style>
 </head>
+
 <body>
+    <div class="shadow-container">
+        <div class="shadow-cursor"></div>
+    </div>
     <div class="container">
         <h1>Online Market Startup</h1>
         <p>All live real-time database API endpoints</p>
         <div class="links-grid">
-            <a href="/users">Users API</a>
-            <a href="/shops">Shops API</a>
-            <a href="/products">Products API</a>
-            <a href="/followings">Followers API</a>
-            <a href="/comments">Comments API</a>
-            <a href="/reactions">Reactions API</a>
-            <a href="/orders">Orders API</a>
-            <a href="/discounts">Discounts API</a>
-            <a href="/sliders">Sliders API</a>
-            <a href="/feature-requests">Feature Requests API</a>
+            <a href="/users" class="api">
+                Users API
+                <div></div>
+            </a>
+            <a href="/shops" class="api">
+                Shops API
+                <div></div>
+            </a>
+            <a href="/products" class="api">
+                Products API
+                <div></div>
+            </a>
+            <a href="/followings" class="api">
+                Followers API
+                <div></div>
+            </a>
+            <a href="/comments" class="api">
+                Comments API
+                <div></div>
+            </a>
+            <a href="/reactions" class="api">
+                Reactions API
+                <div></div>
+            </a>
+            <a href="/orders" class="api">
+                Orders API
+                <div></div>
+            </a>
+            <a href="/discounts" class="api">
+                Discounts API
+                <div></div>
+            </a>
+            <a href="/sliders" class="api">
+                Sliders API
+                <div></div>
+            </a>
+            <a href="/feature-requests" class="api">
+                Feature Requests API
+                <div></div>
+            </a>
         </div>
+        <a href="https://internet-magazin-uzum.vercel.app/" class="project api">
+            Startupga o'tish >
+            <div></div>
+        </a>
     </div>
+
+    <script>
+        const shadowContainer = document.querySelector('.shadow-container')
+        const shadowCursor = document.querySelector('.shadow-cursor')
+
+        window.addEventListener('mousemove', e => {
+            const x = e.clientX
+            const y = e.clientY
+            console.log(x, y)
+
+            shadowCursor.style.transform = `translate(${x - 100}px, ${y - 100}px) scale(3)`
+        })
+
+        const apiBtns = document.querySelectorAll('.api')
+        apiBtns.forEach(item => {
+            item.addEventListener('pointerdown', e => {
+                e.preventDefault()
+                const targetUrl = item.getAttribute('href')
+                const rect = item.getBoundingClientRect()
+                const x = e.clientX - rect.left
+                const y = e.clientY - rect.top
+                console.log(x, y)
+
+                const innerDiv = item.querySelector('div')
+
+                innerDiv.style.transition = 'none'
+                innerDiv.style.transform = `translate(${x - 5}px, ${y - 5}px) scale(0)`
+
+                let scale = 0
+                const render = () => {
+                    innerDiv.style.transform = `translate(${x - 5}px, ${y - 5}px) scale(${scale})`
+                }
+
+                const interval = setInterval(() => {
+                    scale = scale + 3
+
+                    render()
+                }, 40);
+                setTimeout(() => {
+                    clearInterval(interval)
+                    scale = 0
+                    innerDiv.style.transition = 'all 0s ease'
+                    render()
+                    window.location.href = targetUrl
+                }, 1000);
+            })
+        })
+    </script>
 </body>
+
 </html>
