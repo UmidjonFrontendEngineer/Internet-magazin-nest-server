@@ -11,21 +11,27 @@ import { DiscountsModule } from './discounts/discounts.module';
 import { SlidersModule } from './sliders/sliders.module';
 import { FeatureRequestsModule } from './feature-requests/feature-requests.module';
 import { AuthModule } from './auth/auth.module';
+import { FollowingsModule } from './followings/followings.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    DatabaseModule,
-    UsersModule,
-    ShopsModule,
-    ProductsModule,
-    CommentsModule,
-    OrdersModule,
-    ReactionsModule,
-    DiscountsModule,
-    SlidersModule,
-    FeatureRequestsModule,
-    AuthModule,
-  ],
+    imports: [
+        ConfigModule.forRoot({ isGlobal: true }),
+        DatabaseModule,
+        UsersModule,
+        ShopsModule,
+        ProductsModule,
+        CommentsModule,
+        OrdersModule,
+        ReactionsModule,
+        DiscountsModule,
+        SlidersModule,
+        FeatureRequestsModule,
+        AuthModule,
+        FollowingsModule
+    ],
+    controllers: [AppController],
+    providers: [AppService]
 })
-export class AppModule {}
+export class AppModule { }
