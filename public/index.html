@@ -41,6 +41,7 @@
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
+            overflow: hidden;
         }
 
         .container {
@@ -57,6 +58,7 @@
             display: flex;
             gap: 10px;
             flex-direction: column;
+            transition: all 0.2s ease;
         }
 
         h1 {
@@ -236,7 +238,7 @@
         const shadowContainer = document.querySelector('.shadow-container')
         const shadowCursor = document.querySelector('.shadow-cursor')
 
-        window.addEventListener('mousemove', e => {
+        window.addEventListener('pointermove', e => {
             const x = e.clientX
             const y = e.clientY
             console.log(x, y)
@@ -278,6 +280,27 @@
                 }, 1000);
             })
         })
+
+        const card = document.querySelector('.container');
+
+        window.addEventListener('pointermove', (e) => {
+            const { clientX, clientY } = e;
+            let x = (clientX / window.innerWidth - 0.5) * 10;
+            let y = (clientY / window.innerHeight - 0.5) * 10;
+
+            if (!card.contains(e.target)) {
+                x = (clientX / window.innerWidth - 0.5) * 34;
+                y = (clientY / window.innerHeight - 0.5) * 34;
+            }
+
+            card.style.transform = `perspective(1000px) rotateY(${x}deg) rotateX(${-y}deg)`;
+
+            if (typeof apiBtns !== 'undefined') {
+                apiBtns.forEach(btn => {
+                    btn.style.transform = `perspective(1000px) rotateY(${x - (x / 1.2)}deg) rotateX(${-y - (x / 1.2)}deg)`;
+                });
+            }
+        });
     </script>
 </body>
 
