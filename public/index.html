@@ -279,7 +279,7 @@
                 }
 
                 const interval = setInterval(() => {
-                    scale = scale + 3
+                    scale = scale + 7
 
                     render()
                 }, 40);
@@ -288,14 +288,14 @@
                     scale = 0
                     innerDiv.style.transition = 'all 0s ease'
                     render()
-                }, 1000);
+                }, 400);
             })
             item.addEventListener('click', e => {
                 e.preventDefault()
                 const targetUrl = item.getAttribute('href')
                 setTimeout(() => {
                     window.location.href = targetUrl
-                }, 1000);
+                }, 400);
             })
         })
 

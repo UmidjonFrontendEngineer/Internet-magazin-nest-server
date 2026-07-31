@@ -1,13 +1,16 @@
-import { Injectable, UnauthorizedException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, InternalServerErrorException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from '../database/database.service';
+import { Pool } from 'pg';
 import axios from 'axios';
+import { uploadImageToImgBB } from '../common/helpers/image-upload.helper';
 
 @Injectable()
 export class AuthService {
   constructor(
     private db: DatabaseService,
     private jwtService: JwtService,
+    @Inject('DATABASE_POOL') private pool: Pool
   ) { }
 
   async sendOtp(dto: { email: string }) {
@@ -90,7 +93,11 @@ export class AuthService {
     );
 
     const token = this.jwtService.sign(
-      { sub: user.id, email: user.email },
+      {
+        sub: user.id,
+        email: user.email,
+        userName: user.userName || user.email.split('@')[0]
+      },
       { secret: 'SUPER_SECRET_KEY_123' },
     );
 
@@ -166,5 +173,16 @@ export class AuthService {
     } catch (err) {
       throw new UnauthorizedException('Token yaroqsiz yoki amal qilish muddati tugagan');
     }
+  }
+
+  async updateImage(createShopDto: { image: string }, email: string) {
+    const { image } = createShopDto;
+
+    const result = await this.pool.query(
+      'UPDATE "Users" SET image = $1 WHERE email = $2 RETURNING *',
+      [image, email],
+    );
+
+    return result.rows[0];
   }
 }

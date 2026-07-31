@@ -2,6 +2,7 @@ import { Controller, Post, Patch, Get, Delete, Body, Headers, UnauthorizedExcept
 import { AuthService } from './auth.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { uploadImageToImgBB } from 'src/common/helpers/image-upload.helper';
 
 @Controller('auth')
 export class AuthController {
@@ -15,7 +16,7 @@ export class AuthController {
     @Post('verify-otp')
     async verifyOtp(@Body() dto: { email: string; code: string }) {
         return this.authService.verifyOtp(dto);
-      }
+    }
 
     @Get('profile')
     async getProfile(@Headers('authorization') authHeader: string) {
@@ -36,5 +37,24 @@ export class AuthController {
         if (!authHeader) throw new UnauthorizedException('Token topilmadi');
         const token = authHeader.split(' ')[1];
         return this.authService.deleteAccount(token);
+    }
+
+    @Patch('image')
+    @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FileInterceptor('image'))
+    async updateImage(
+        @UploadedFile() file: { buffer: Buffer; originalname: string },
+        @Req() req,
+    ) {
+        if (!file) {
+            throw new BadRequestException('Yuklash uchun rasm topilmadi!');
+        }
+
+        const imageUrl = await uploadImageToImgBB(file);
+
+        return await this.authService.updateImage(
+            { image: imageUrl },
+            req.user.email
+        );
     }
 }
