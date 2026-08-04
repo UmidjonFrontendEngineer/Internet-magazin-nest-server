@@ -20,25 +20,30 @@ export class ShopsController {
     return await this.shopsService.findByUser(req.user.email);
   }
 
-  @Post()
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('logo'))
-  async create(
-    @Body() body: { title: string },
-    @UploadedFile() file: { buffer: Buffer; originalname: string },
-    @Req() req,
-  ) {
-    const logoUrl = await uploadImageToImgBB(file);
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FileInterceptor('logo'))
+    async create(
+      @Body() body: { title: string; lat: string | number; lng: string | number },
+      @UploadedFile() file: { buffer: Buffer; originalname: string },
+      @Req() req,
+    ) {
+      const logoUrl = await uploadImageToImgBB(file);
 
-    return await this.shopsService.create(
-      { title: body.title, logo: logoUrl },
-      req.user.email
-    );
-  }
-  
-  @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  async remove(@Param('id') id: string, @Req() req) {
-    return await this.shopsService.remove(id, req.user.email);
-  }
+      return await this.shopsService.create(
+        {
+          title: body.title,
+          logo: logoUrl,
+          lat: Number(body.lat),
+          lng: Number(body.lng)
+        },
+        req.user.email
+      );
+    }
+
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard)
+    async remove(@Param('id') id: string, @Req() req) {
+      return await this.shopsService.remove(id, req.user.email);
+    }
 }

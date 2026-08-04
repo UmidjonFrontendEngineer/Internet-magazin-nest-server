@@ -1,0 +1,30 @@
+import { Controller, Get, Post, Body, Param, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { VacanciesService } from './vacancies.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateVacancyDto } from './dto/create-vacancy.dto';
+
+@Controller('vacancies')
+export class VacanciesController {
+    constructor(private readonly vacanciesService: VacanciesService) { }
+
+    @Get()
+    async findAll() {
+        return await this.vacanciesService.findAll();
+    }
+
+    @Get('shop/:shopId')
+    async findByShopId(@Param('shopId') shopId: string) {
+        return await this.vacanciesService.findByShopId(shopId);
+    }
+
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FileInterceptor('image'))
+    async create(
+        @UploadedFile() file: { buffer: Buffer; originalname: string },
+        @Body() body: CreateVacancyDto
+    ) {
+        return await this.vacanciesService.create(body, file);
+    }
+}

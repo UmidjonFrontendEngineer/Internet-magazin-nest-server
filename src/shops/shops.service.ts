@@ -17,13 +17,15 @@ export class ShopsService {
     return result.rows;
   }
 
-  async create(createShopDto: { title: string; logo: string }, email: string) {
-    const { title, logo } = createShopDto;
-    const result = await this.pool.query(
-      'INSERT INTO "Shops" (email, title, logo) VALUES ($1, $2, $3) RETURNING *',
-      [email, title, logo],
-    );
-    return result.rows[0];
+  async create(createShopDto: { title: string; logo: string; lat: number; lng: number }, email: string) {
+      const { title, logo, lat, lng } = createShopDto;
+
+      const result = await this.pool.query(
+        'INSERT INTO "Shops" (email, title, logo, lat, lng) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [email, title, logo, lat, lng],
+      );
+
+      return result.rows[0];
   }
 
   async remove(id: string, email: string) {

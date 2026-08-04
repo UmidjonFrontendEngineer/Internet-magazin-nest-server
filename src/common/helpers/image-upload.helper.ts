@@ -1,29 +1,34 @@
-import axios from 'axios';
-const FormData = require('form-data');
+import { v2 as cloudinary } from 'cloudinary';
+import { BadRequestException } from '@nestjs/common';
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function uploadImageToImgBB(file: { buffer: Buffer; originalname: string }): Promise<string> {
     if (!file) {
-        throw new Error('Yuklash uchun rasm topilmadi!');
+        throw new BadRequestException('Yuklash uchun rasm topilmadi!');
     }
 
-    const formData = new FormData();
-    formData.append('image', file.buffer, file.originalname);
-
-    const apiKey = process.env.IMGBB_API_KEY;
-
-    try {
-        const response = await axios.post(
-            `https://api.imgbb.com/1/upload?key=${apiKey}`,
-            formData,
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
             {
-                headers: {
-                    ...formData.getHeaders(),
-                },
+                folder: 'shop_app',
+                resource_type: 'auto',
+                format: 'webp'
+            },
+            (error, result) => {
+                if (error) {
+                    console.error("Cloudinary Error:", error);
+                    reject(new Error('Rasmni yuklashda xatolik yuz berdi!'));
+                } else {
+                    resolve(result!.secure_url);
+                }
             },
         );
 
-        return response.data.data.url;
-    } catch (error) {
-        throw new Error('Rasmni ImgBB ga yuklashda xatolik yuz berdi!');
-    }
+        uploadStream.end(file.buffer);
+    });
 }

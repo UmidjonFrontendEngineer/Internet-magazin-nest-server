@@ -14,6 +14,8 @@ import { AuthModule } from './auth/auth.module';
 import { FollowingsModule } from './followings/followings.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { VacanciesModule } from './vacancies/vacancies.module';
+import { WorkersModule } from './workers/workers.module';
 
 @Module({
     imports: [
@@ -29,7 +31,9 @@ import { AppService } from './app.service';
         SlidersModule,
         FeatureRequestsModule,
         AuthModule,
-        FollowingsModule
+        FollowingsModule,
+        VacanciesModule,
+        WorkersModule
     ],
     controllers: [AppController],
     providers: [AppService]

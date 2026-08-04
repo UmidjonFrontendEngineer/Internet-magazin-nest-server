@@ -4,6 +4,7 @@ import { DatabaseService } from '../database/database.service';
 import { Pool } from 'pg';
 import axios from 'axios';
 import { uploadImageToImgBB } from '../common/helpers/image-upload.helper';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -14,102 +15,113 @@ export class AuthService {
   ) { }
 
   async sendOtp(dto: { email: string }) {
-    console.log("1. Funksiyaga kelgan dto:", dto);
+      console.log("dto:", dto);
 
-    if (!dto || !dto.email) {
-      console.log("2. Email topilmadi yoki dto bo'sh!");
-      throw new BadRequestException('Email kiritilishi shart!');
-    }
+      if (!dto || !dto.email) {
+        console.log("Email topilmadi!");
+        throw new BadRequestException('Email kiritilishi shart!');
+      }
 
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(dto.email)) {
+        throw new BadRequestException('Noto‘g‘ri email formati kiritildi!');
+      }
 
-    let userResult = await this.db.query(
-      'SELECT * FROM "Users" WHERE email = $1',
-      [dto.email],
-    );
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+      const hashedOtp = await bcrypt.hash(otpCode, 10);
 
-    if (userResult.rows.length === 0) {
-      const defaultUserName = 'user_' + Math.random().toString(36).substring(2, 8);
+      let userResult = await this.db.query(
+        'SELECT * FROM "Users" WHERE email = $1',
+        [dto.email],
+      );
+
+      if (userResult.rows.length === 0) {
+        const defaultUserName = 'user_' + Math.random().toString(36).substring(2, 8);
+        await this.db.query(
+          `INSERT INTO "Users" (email, "userName", image) VALUES ($1, $2, $3)`,
+          [dto.email, defaultUserName, 'https://i.ibb.co/nNZrjBSD/user.png'],
+        );
+      }
+
       await this.db.query(
-        `INSERT INTO "Users" (email, "userName", image) VALUES ($1, $2, $3)`,
-        [dto.email, defaultUserName, 'https://i.ibb.co/nNZrjBSD/user.png'],
+        `UPDATE "Users" SET "otpCode" = $1, "otpExpires" = $2 WHERE email = $3`,
+        [hashedOtp, expiresAt, dto.email],
       );
-    }
 
-    await this.db.query(
-      `UPDATE "Users" SET "otpCode" = $1, "otpExpires" = $2 WHERE email = $3`,
-      [otpCode, expiresAt, dto.email],
-    );
+      try {
+        const nextJsUrl = 'https://internet-magazin-panel.vercel.app/api/send-mail';
+        console.log("so'rov yuborilmoqda...", nextJsUrl);
 
-    try {
-      const nextJsUrl = 'https://internet-magazin-panel.vercel.app/api/send-mail';
-      console.log("3. Next.js ga so'rov yuborilmoqda...", nextJsUrl);
-
-      const response = await axios.post(
-        nextJsUrl,
-        {
-          email: dto.email,
-          otp: otpCode,
-        },
-        {
-          headers: {
-            'x-api-key': process.env.INTERNAL_API_KEY,
+        const response = await axios.post(
+          nextJsUrl,
+          {
+            email: dto.email,
+            otp: otpCode,
           },
-        },
-      );
+          {
+            headers: {
+              'x-api-key': process.env.INTERNAL_API_KEY,
+            },
+          },
+        );
 
-      console.log("4. Next.js javobi:", response.data);
+        console.log("4. Next.js javobi:", response.data);
 
-    } catch (error: any) {
-      console.error('5. Axios / Next.js xatoligi:', error.response?.data || error.message);
-      throw new BadRequestException('Emailga xat yuborib bo\'lmadi. Next.js serverini tekshiring!');
-    }
+      } catch (error: any) {
+        console.error('5. Axios / Next.js xatoligi:', error.response?.data || error.message);
+        throw new BadRequestException('Emailga xat yuborib bo\'lmadi. Next.js serverini tekshiring!');
+      }
 
-    return {
-      message: 'Tasdiqlash kodi emailingizga yuborildi!',
-    };
+      return {
+        message: 'Tasdiqlash kodi emailingizga yuborildi!',
+      };
   }
 
   async verifyOtp(dto: { email: string; code: string }) {
-    const result = await this.db.query(
-      'SELECT * FROM "Users" WHERE email = $1',
-      [dto.email],
-    );
+      const result = await this.db.query(
+        'SELECT * FROM "Users" WHERE email = $1',
+        [dto.email],
+      );
 
-    const user = result.rows[0];
+      const user = result.rows[0];
 
-    if (!user || user.otpCode !== dto.code) {
-      throw new UnauthorizedException('Tasdiqlash kodi xato!');
+      if (!user || !user.otpCode) {
+        throw new UnauthorizedException('Tasdiqlash kodi xato!');
+      }
+
+      const isMatch = await bcrypt.compare(dto.code, user.otpCode);
+      if (!isMatch) {
+        throw new UnauthorizedException('Tasdiqlash kodi xato!');
+      }
+
+      if (new Date() > new Date(user.otpExpires)) {
+        throw new UnauthorizedException('Tasdiqlash kodining muddati tugagan!');
+      }
+
+      await this.db.query(
+        `UPDATE "Users" SET "otpCode" = NULL, "otpExpires" = NULL WHERE id = $1`,
+        [user.id],
+      );
+
+      const token = this.jwtService.sign(
+        {
+          sub: user.id,
+          email: user.email,
+          userName: user.userName || user.email.split('@')[0]
+        },
+        { secret: 'SUPER_SECRET_KEY_123' },
+      );
+
+      delete user.otpCode;
+      delete user.otpExpires;
+
+      return {
+        message: 'Xush kelibsiz!',
+        token,
+        user,
+      };
     }
-
-    if (new Date() > new Date(user.otpExpires)) {
-      throw new UnauthorizedException('Tasdiqlash kodining muddati tugagan!');
-    }
-
-    await this.db.query(
-      `UPDATE "Users" SET "otpCode" = NULL, "otpExpires" = NULL WHERE id = $1`,
-      [user.id],
-    );
-
-    const token = this.jwtService.sign(
-      {
-        sub: user.id,
-        email: user.email,
-        userName: user.userName || user.email.split('@')[0]
-      },
-      { secret: 'SUPER_SECRET_KEY_123' },
-    );
-
-    delete user.otpCode;
-    delete user.otpExpires;
-
-    return {
-      message: 'Xush kelibsiz!',
-      token,
-      user,
-    };
-  }
 
   async getProfile(token: string) {
     try {
