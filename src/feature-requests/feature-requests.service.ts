@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
-import { CreateFeatureRequestDto } from './dto/feature-request.dto';
+import { CreateFeatureRequestDto } from './dto/create-feature-request.dto';
 
 @Injectable()
 export class FeatureRequestsService {

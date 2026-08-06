@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
 import { FeatureRequestsService } from './feature-requests.service';
-import { CreateFeatureRequestDto } from './dto/feature-request.dto';
+import { CreateFeatureRequestDto } from './dto/create-feature-request.dto';
 
 @Controller('feature-requests')
 export class FeatureRequestsController {
