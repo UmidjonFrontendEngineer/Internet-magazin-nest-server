@@ -1,9 +1,9 @@
 import { IsNotEmpty, IsString, IsUUID, IsEmail } from 'class-validator';
 
 export class CreateWorkerDto {
-    @IsNotEmpty({ message: "Do'kon ID (shopId) kiritilishi shart" })
-    @IsUUID('4', { message: "shopId yaroqli UUID formatida bo'lishi kerak" })
-    shopId!: string;
+    @IsNotEmpty({ message: "Do'kon ID (marketId) kiritilishi shart" })
+    @IsUUID('4', { message: "marketId yaroqli UUID formatida bo'lishi kerak" })
+    marketId!: string;
 
     @IsNotEmpty({ message: "Foydalanuvchi emaili kiritilishi shart" })
     @IsEmail({}, { message: "Yaroqli email manzilini kiriting" })

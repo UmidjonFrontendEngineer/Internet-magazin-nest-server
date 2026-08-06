@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
-import { CreateFeatureRequestDto } from './feature-requests.dto';
+import { CreateFeatureRequestDto } from './dto/feature-request.dto';
 
 @Injectable()
 export class FeatureRequestsService {
-  constructor(@Inject('DATABASE_POOL') private pool: Pool) {}
+  constructor(@Inject('DATABASE_POOL') private pool: Pool) { }
 
   async findAll() {
     const result = await this.pool.query('SELECT * FROM "FeatureRequests"');

@@ -12,9 +12,9 @@ export class VacanciesService {
         return result.rows;
     }
 
-    async findByShopId(shopId: string) {
-        const query = 'SELECT * FROM "Vacancies" WHERE "shopId" = $1';
-        const result = await this.pool.query(query, [shopId]);
+    async findByMarketId(marketId: string) {
+        const query = 'SELECT * FROM "Vacancies" WHERE "marketId" = $1';
+        const result = await this.pool.query(query, [marketId]);
         return result.rows;
     }
 
@@ -26,13 +26,13 @@ export class VacanciesService {
         const imageUrl = await uploadImageToImgBB(file);
 
         const query = `
-            INSERT INTO "Vacancies" ("shopId", "title", "description", "image", "requiredWorkers", "requiredRole", "salary")
+            INSERT INTO "Vacancies" ("marketId", "title", "description", "image", "requiredWorkers", "requiredRole", "salary")
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *;
         `;
 
         const values = [
-            vacancy.shopId,
+            vacancy.marketId,
             vacancy.title,
             vacancy.description,
             imageUrl,

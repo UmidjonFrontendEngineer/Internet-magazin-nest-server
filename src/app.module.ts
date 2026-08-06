@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
-import { ShopsModule } from './shops/shops.module';
+import { MarketsModule } from './markets/markets.module';
 import { ProductsModule } from './products/products.module';
 import { CommentsModule } from './comments/comments.module';
 import { OrdersModule } from './orders/orders.module';
@@ -22,7 +22,7 @@ import { WorkersModule } from './workers/workers.module';
         ConfigModule.forRoot({ isGlobal: true }),
         DatabaseModule,
         UsersModule,
-        ShopsModule,
+        MarketsModule,
         ProductsModule,
         CommentsModule,
         OrdersModule,

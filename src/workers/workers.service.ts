@@ -13,13 +13,13 @@ export class WorkersService {
 
     async create(worker: CreateWorkerDto) {
         const query = `
-            INSERT INTO "Workers" ("userEmail", "shopId", "role") 
+            INSERT INTO "Workers" ("userEmail", "marketId", "role") 
             VALUES ($1, $2, $3) 
             RETURNING *;
         `;
         const values = [
             worker.userEmail,
-            worker.shopId,
+            worker.marketId,
             worker.role
         ];
         const result = await this.pool.query(query, values);

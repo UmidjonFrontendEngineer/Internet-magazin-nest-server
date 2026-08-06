@@ -13,9 +13,9 @@ export class VacanciesController {
         return await this.vacanciesService.findAll();
     }
 
-    @Get('shop/:shopId')
-    async findByShopId(@Param('shopId') shopId: string) {
-        return await this.vacanciesService.findByShopId(shopId);
+    @Get('market/:marketId')
+    async findByMarketId(@Param('marketId') marketId: string) {
+        return await this.vacanciesService.findByMarketId(marketId);
     }
 
     @Post()

@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
-import { CreateFollowingDto } from './followings.dto';
+import { CreateFollowingDto } from './dto/create-following.dto';
 
 @Injectable()
 export class FollowingsService {

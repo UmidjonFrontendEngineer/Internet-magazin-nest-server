@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
-import { CreateDiscountDto } from './discounts.dto';
+import { CreateDiscountDto } from './dto/create-discount.dto';
 
 @Injectable()
 export class DiscountsService {
-  constructor(@Inject('DATABASE_POOL') private pool: Pool) {}
+  constructor(@Inject('DATABASE_POOL') private pool: Pool) { }
 
   async findAll() {
     const result = await this.pool.query('SELECT * FROM "Discounts"');
@@ -12,11 +12,11 @@ export class DiscountsService {
   }
 
   async create(createDiscountDto: CreateDiscountDto) {
-    const { title, percentage, startDate, endDate, shop } = createDiscountDto;
+    const { title, percentage, startDate, endDate, market } = createDiscountDto;
 
     const result = await this.pool.query(
-      'INSERT INTO "Discounts" (title, percentage, "startDate", "endDate", shop) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [title, percentage, startDate, endDate, shop],
+      'INSERT INTO "Discounts" (title, percentage, "startDate", "endDate", market) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [title, percentage, startDate, endDate, market],
     );
 
     return result.rows[0];

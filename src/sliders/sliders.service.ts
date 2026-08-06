@@ -12,10 +12,10 @@ export class SlidersService {
   }
 
   async create(createSliderDto: CreateSliderDto) {
-    const { image_url, link, shop } = createSliderDto;
+    const { image_url, link, market } = createSliderDto;
     const result = await this.pool.query(
-      'INSERT INTO "Sliders" (image_url, link, shop) VALUES ($1, $2, $3) RETURNING *',
-      [image_url, link, shop],
+      'INSERT INTO "Sliders" (image_url, link, market) VALUES ($1, $2, $3) RETURNING *',
+      [image_url, link, market],
     );
     return result.rows[0];
   }

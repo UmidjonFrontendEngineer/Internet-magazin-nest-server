@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, IsOptional, IsNumber, IsUUID, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class CreateVacancyDto {
+export class CreateWherehouseDto {
     @IsNotEmpty({ message: "Do'kon ID (marketId) kiritilishi shart" })
     @IsUUID('4', { message: "marketId yaroqli UUID formatida bo'lishi kerak" })
     marketId!: string;

@@ -25,12 +25,12 @@ export class ProductsService {
       options,
       images = [],
       quantity = 0,
-      shop,
+      market,
     } = createProductDto;
 
     const result = await this.pool.query(
       `INSERT INTO "Products"
-      (title, description, price, percentage, tab, "gradientSelect", gradient, "chegirmaSelect", chegirma, options, images, quantity, shop)
+      (title, description, price, percentage, tab, "gradientSelect", gradient, "chegirmaSelect", chegirma, options, images, quantity, market)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
       [
         title,
@@ -45,7 +45,7 @@ export class ProductsService {
         JSON.stringify(options),
         images,
         quantity,
-        shop,
+        market,
       ],
     );
     return result.rows[0];

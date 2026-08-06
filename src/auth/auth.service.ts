@@ -187,8 +187,8 @@ export class AuthService {
     }
   }
 
-  async updateImage(createShopDto: { image: string }, email: string) {
-    const { image } = createShopDto;
+  async updateImage(createMarketDto: { image: string }, email: string) {
+    const { image } = createMarketDto;
 
     const result = await this.pool.query(
       'UPDATE "Users" SET image = $1 WHERE email = $2 RETURNING *',

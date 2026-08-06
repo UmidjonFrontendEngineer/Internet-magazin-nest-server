@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
 import { DiscountsService } from './discounts.service';
-import { CreateDiscountDto } from './discounts.dto';
+import { CreateDiscountDto } from './dto/create-discount.dto';
 
 @Controller('discounts')
 export class DiscountsController {
-  constructor(private readonly discountsService: DiscountsService) {}
+  constructor(private readonly discountsService: DiscountsService) { }
 
   @Get()
   async findAll() {
