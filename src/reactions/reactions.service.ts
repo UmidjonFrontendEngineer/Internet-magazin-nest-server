@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
-import { CreateReactionDto } from './reactions.dto';
+import { CreateReactionDto } from './dto/create-reaction.dto';
 
 @Injectable()
 export class ReactionsService {

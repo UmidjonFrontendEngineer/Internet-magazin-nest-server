@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
-import { CreateSliderDto } from './sliders.dto';
+import { CreateSliderDto } from './dto/create-slider.dto';
 
 @Injectable()
 export class SlidersService {

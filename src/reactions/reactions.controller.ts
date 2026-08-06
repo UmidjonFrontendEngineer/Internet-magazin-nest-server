@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
 import { ReactionsService } from './reactions.service';
-import { CreateReactionDto } from './reactions.dto';
+import { CreateReactionDto } from './dto/create-reaction.dto';
 
 @Controller('reactions')
 export class ReactionsController {

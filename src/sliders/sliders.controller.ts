@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
 import { SlidersService } from './sliders.service';
-import { CreateSliderDto } from './sliders.dto';
+import { CreateSliderDto } from './dto/create-slider.dto';
 
 @Controller('sliders')
 export class SlidersController {
