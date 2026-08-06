@@ -1,36 +1,18 @@
-import { IsNotEmpty, IsString, IsOptional, IsNumber, IsUUID, Min } from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateWherehouseDto {
-    @IsNotEmpty({ message: "Do'kon ID (marketId) kiritilishi shart" })
-    @IsUUID('4', { message: "marketId yaroqli UUID formatida bo'lishi kerak" })
-    marketId!: string;
+    @IsNotEmpty({ message: "Email kiritilishi shart" })
+    @IsEmail({}, { message: "Yaroqli email manzilini kiriting" })
+    email!: string;
 
-    @IsNotEmpty({ message: "Vakansiya sarlavhasi bo'sh bo'lmasligi kerak" })
-    @IsString({ message: "Sarlavha matn shaklida bo'lishi kerak" })
-    title!: string;
-
-    @IsOptional()
-    @IsString()
-    description?: string;
-
-    @IsNotEmpty({ message: "Rasm kiritilishi shart" })
-    @IsString({ message: "Rasm matn shaklida bo'lishi kerak" })
-    image!: string;
-
-    @IsNotEmpty({ message: "Ishchilar soni kiritilishi shart" })
+    @IsNotEmpty({ message: "Kenglik (lat) kiritilishi shart" })
     @Type(() => Number)
-    @IsNumber({}, { message: "Ishchilar soni raqam bo'lishi kerak" })
-    @Min(1, { message: "Kamida 1 ta ishchi kerak bo'lishi shart" })
-    requiredWorkers!: number;
+    @IsNumber({}, { message: "Kenglik raqam bo'lishi kerak" })
+    lat!: number;
 
-    @IsNotEmpty({ message: "Talab qilingan rol (requiredRole) kiritilishi shart" })
-    @IsString()
-    requiredRole!: string;
-
-    @IsOptional()
+    @IsNotEmpty({ message: "Uzunlik (lng) kiritilishi shart" })
     @Type(() => Number)
-    @IsNumber({}, { message: "Maosh son ko'rinishida bo'lishi kerak" })
-    @Min(0, { message: "Maosh 0 dan kichik bo'lishi mumkin emas" })
-    salary?: number;
+    @IsNumber({}, { message: "Uzunlik raqam bo'lishi kerak" })
+    lng!: number;
 }
