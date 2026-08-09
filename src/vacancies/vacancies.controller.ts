@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, UseInterceptors, UploadedFile, Delete, Req } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { VacanciesService } from './vacancies.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -26,5 +26,13 @@ export class VacanciesController {
         @Body() body: CreateVacancyDto
     ) {
         return await this.vacanciesService.create(body, file);
+    }
+
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard)
+    async remove(@Param('id') id: string, @Req() req) {
+        const userEmail = req.user.email;
+
+        return await this.vacanciesService.remove(id, userEmail);
     }
 }

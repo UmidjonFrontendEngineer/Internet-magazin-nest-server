@@ -10,13 +10,13 @@ export class CreateVacancyDto {
     @IsString({ message: "Sarlavha matn shaklida bo'lishi kerak" })
     title!: string;
 
-    @IsOptional()
+    @IsNotEmpty({ message: "Talab qilingan rol (requiredRole) kiritilishi shart" })
     @IsString()
-    description?: string;
+    requiredRole!: string;
 
-    @IsNotEmpty({ message: "Rasm kiritilishi shart" })
-    @IsString({ message: "Rasm matn shaklida bo'lishi kerak" })
-    image!: string;
+    @IsNotEmpty({ message: "Ishlash stavkalarini yozish shart" })
+    @IsString()
+    jobType!: string;
 
     @IsNotEmpty({ message: "Ishchilar soni kiritilishi shart" })
     @Type(() => Number)
@@ -24,13 +24,41 @@ export class CreateVacancyDto {
     @Min(1, { message: "Kamida 1 ta ishchi kerak bo'lishi shart" })
     requiredWorkers!: number;
 
-    @IsNotEmpty({ message: "Talab qilingan rol (requiredRole) kiritilishi shart" })
-    @IsString()
-    requiredRole!: string;
-
     @IsOptional()
     @Type(() => Number)
     @IsNumber({}, { message: "Maosh son ko'rinishida bo'lishi kerak" })
     @Min(0, { message: "Maosh 0 dan kichik bo'lishi mumkin emas" })
     salary?: number;
+
+    @IsNotEmpty({ message: "Rasm kiritilishi shart" })
+    @IsString({ message: "Rasm matn shaklida bo'lishi kerak" })
+    image!: string;
+
+    @IsNotEmpty({ message: "Rasm kiritilishi shart" })
+    @IsString()
+    skills!: string;
+
+    @IsNotEmpty({ message: "Tajriba belgilanishi shart" })
+    @IsString()
+    experience!: string;
+
+    @IsOptional()
+    @IsString()
+    description?: string;
+
+    @IsOptional()
+    @IsString()
+    benefits?: string;
+
+    @IsNotEmpty({ message: "HR ning ismi bo'lishi shart" })
+    @IsString()
+    hrName!: string;
+
+    @IsNotEmpty({ message: "HR ning telefon raqami bo'lishi shart" })
+    @IsString()
+    hrPhone!: string;
+
+    @IsOptional()
+    @IsString()
+    hrLink?: string;
 }
