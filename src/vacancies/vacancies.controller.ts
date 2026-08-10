@@ -28,11 +28,39 @@ export class VacanciesController {
         return await this.vacanciesService.create(body, file);
     }
 
+    @Post(':id/apply')
+    @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FileInterceptor('image'))
+    async applyToVacancy(
+        @Param('id') vacancyId: string,
+        @Req() req,
+        @UploadedFile() file?: { buffer: Buffer; originalname: string },
+        @Body() body?: { message?: string }
+    ) {
+        const userEmail = req.user.email;
+        const message = body?.message || '';
+
+        return await this.vacanciesService.applyToVacancy(vacancyId, userEmail, file, message);
+    }
+
     @Delete(':id')
     @UseGuards(JwtAuthGuard)
     async remove(@Param('id') id: string, @Req() req) {
         const userEmail = req.user.email;
 
         return await this.vacanciesService.remove(id, userEmail);
+    }
+
+    @Post(':id/rate')
+    @UseGuards(JwtAuthGuard)
+    async rateToVacancy(
+        @Param('id') vacancyId: string,
+        @Req() req,
+        @Body() body: { rateCount: number }
+    ) {
+        const userEmail = req.user.email;
+        const rate = body.rateCount;
+
+        return await this.vacanciesService.rateToVacancy(vacancyId, userEmail, rate);
     }
 }

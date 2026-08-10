@@ -52,6 +52,55 @@ export class VacanciesService {
         return result.rows[0];
     }
 
+    async applyToVacancy(
+        vacancyId: string,
+        userEmail: string,
+        file?: { buffer: Buffer; originalname: string },
+        message?: string
+    ) {
+        const vacancyCheck = await this.pool.query(
+            'SELECT * FROM "Vacancies" WHERE id = $1',
+            [vacancyId],
+        );
+
+        if (vacancyCheck.rows.length === 0) {
+            throw new NotFoundException('Vakansiya topilmadi!');
+        }
+
+        const vacancy = vacancyCheck.rows[0];
+        const currentApplicants = vacancy.applicants || [];
+
+        const alreadyApplied = currentApplicants.some((app: any) => app.email === userEmail);
+        if (alreadyApplied) {
+            throw new BadRequestException('Siz allaqachon bu vakansiyaga ariza topshirgansiz!');
+        }
+
+        let imageUrl: string | null = null;
+        if (file) {
+            imageUrl = await uploadImageToImgBB(file);
+        }
+
+        const newApplicant = {
+            email: userEmail,
+            message: message || '',
+            image: imageUrl,
+            rate: null
+        };
+
+        const result = await this.pool.query(
+            `UPDATE "Vacancies" 
+             SET applicants = applicants || $2::jsonb 
+             WHERE id = $1 
+             RETURNING *;`,
+            [vacancyId, JSON.stringify(newApplicant)],
+        );
+
+        return {
+            message: "Ariza muvaffaqiyatli yuborildi!",
+            vacancy: result.rows[0]
+        };
+    }
+
     async remove(vacancyId: string, userEmail: string) {
         const marketQuery = await this.pool.query(
             'SELECT id FROM "Markets" WHERE email = $1',
@@ -85,5 +134,47 @@ export class VacanciesService {
         );
 
         return { message: "Vakansiya muvaffaqiyatli o'chirildi", deletedVacancy: result.rows[0] };
+    }
+
+    async rateToVacancy(vacancyId: string, userEmail: string, rate: number) {
+        const vacancyCheck = await this.pool.query(
+            'SELECT * FROM "Vacancies" WHERE id = $1',
+            [vacancyId],
+        );
+
+        if (vacancyCheck.rows.length === 0) {
+            throw new NotFoundException('Vakansiya topilmadi!');
+        }
+
+        const vacancy = vacancyCheck.rows[0];
+        const currentApplicants = vacancy.applicants || [];
+
+        const applicantExists = currentApplicants.some((app: any) => app.email === userEmail);
+        if (!applicantExists) {
+            throw new BadRequestException('Siz bu vakansiyaga ariza topshirmagansiz, shuning uchun baholay olmaysiz!');
+        }
+
+        const query = `
+            UPDATE "Vacancies"
+            SET applicants = (
+                SELECT jsonb_agg(
+                    CASE 
+                        WHEN elem->>'email' = $2 THEN jsonb_set(elem, '{rate}', to_jsonb($3::int))
+                        ELSE elem
+                    END
+                )
+                FROM jsonb_array_elements(applicants) AS elem
+            )
+            WHERE id = $1
+            RETURNING *;
+        `;
+
+        const result = await this.pool.query(query, [vacancyId, userEmail, rate]);
+
+        return {
+            ok: true,
+            message: "Baho muvaffaqiyatli saqlandi!",
+            vacancy: result.rows[0]
+        };
     }
 }
