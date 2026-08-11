@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUUID, IsEmail } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID, IsEmail, IsOptional } from 'class-validator';
 
 export class CreateWorkerDto {
     @IsNotEmpty({ message: "Do'kon ID (marketId) kiritilishi shart" })
@@ -9,7 +9,11 @@ export class CreateWorkerDto {
     @IsEmail({}, { message: "Yaroqli email manzilini kiriting" })
     userEmail!: string;
 
-    @IsNotEmpty({ message: "Rol (role) kiritilishi shart" })
+    @IsOptional()
     @IsString({ message: "Rol matn shaklida bo'lishi kerak" })
-    role!: string;
+    role?: string;
+
+    @IsNotEmpty()
+    @IsUUID()
+    VacancyId!: string;
 }
