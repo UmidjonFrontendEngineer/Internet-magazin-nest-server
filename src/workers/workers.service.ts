@@ -11,10 +11,10 @@ export class WorkersService {
         return result.rows;
     }
 
-    async create(worker: CreateWorkerDto & { VacancyId: string }) {
+    async create(worker: CreateWorkerDto & { vacancyId: string }) {
         const vacancyQuery = await this.pool.query(
             'SELECT "requiredRole" FROM "Vacancies" WHERE id = $1',
-            [worker.VacancyId]
+            [worker.vacancyId]
         );
 
         if (vacancyQuery.rows.length === 0) {
@@ -33,7 +33,7 @@ export class WorkersService {
             worker.userEmail,
             worker.marketId,
             role,
-            worker.VacancyId
+            worker.vacancyId
         ];
 
         const result = await this.pool.query(query, values);

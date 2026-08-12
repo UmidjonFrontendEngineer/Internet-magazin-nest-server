@@ -15,5 +15,5 @@ export class CreateWorkerDto {
 
     @IsNotEmpty()
     @IsUUID()
-    VacancyId!: string;
+    vacancyId!: string;
 }
