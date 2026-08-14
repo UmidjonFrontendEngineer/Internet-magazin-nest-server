@@ -136,7 +136,7 @@ export class VacanciesService {
         return { message: "Vakansiya muvaffaqiyatli o'chirildi", deletedVacancy: result.rows[0] };
     }
 
-    async rateToVacancy(vacancyId: string, userEmail: string, rate: number) {
+    async rateToVacancy(vacancyId: string, targetEmail: string, rate: number) {
         const vacancyCheck = await this.pool.query(
             'SELECT * FROM "Vacancies" WHERE id = $1',
             [vacancyId],
@@ -149,9 +149,10 @@ export class VacanciesService {
         const vacancy = vacancyCheck.rows[0];
         const currentApplicants = vacancy.applicants || [];
 
-        const applicantExists = currentApplicants.some((app: any) => app.email === userEmail);
+        const applicantExists = currentApplicants.some((app: any) => app.email === targetEmail);
+
         if (!applicantExists) {
-            throw new BadRequestException('Siz bu vakansiyaga ariza topshirmagansiz, shuning uchun baholay olmaysiz!');
+            throw new BadRequestException('Bu nomzod ushbu vakansiyaga ariza topshirmagan!');
         }
 
         const query = `
@@ -169,11 +170,11 @@ export class VacanciesService {
             RETURNING *;
         `;
 
-        const result = await this.pool.query(query, [vacancyId, userEmail, rate]);
+        const result = await this.pool.query(query, [vacancyId, targetEmail, rate]);
 
         return {
             ok: true,
-            message: "Baho muvaffaqiyatli saqlandi!",
+            message: "Nomzod baholandi!",
             vacancy: result.rows[0]
         };
     }

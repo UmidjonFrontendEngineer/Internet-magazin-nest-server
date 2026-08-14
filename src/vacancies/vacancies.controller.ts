@@ -55,12 +55,8 @@ export class VacanciesController {
     @UseGuards(JwtAuthGuard)
     async rateToVacancy(
         @Param('id') vacancyId: string,
-        @Req() req,
-        @Body() body: { rateCount: number }
+        @Body() body: { rateCount: number; targetEmail: string }
     ) {
-        const userEmail = req.user.email;
-        const rate = body.rateCount;
-
-        return await this.vacanciesService.rateToVacancy(vacancyId, userEmail, rate);
+        return await this.vacanciesService.rateToVacancy(vacancyId, body.targetEmail, body.rateCount);
     }
 }
