@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUUID, IsOpti, isStringonal } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID, IsOptional } from 'class-validator';
 
 export class CreateWorkerDto {
     @IsNotEmpty({ message: "Do'kon ID (marketId) kiritilishi shart" })
@@ -6,7 +6,7 @@ export class CreateWorkerDto {
     marketId!: string;
 
     @IsNotEmpty({ message: "Foydalanuvchi idsi kiritilishi shart" })
-    @isString({}, { message: "Yaroqli id manzilini kiriting" })
+    @IsString({ message: "Yaroqli id manzilini kiriting" })
     userId!: string;
 
     @IsOptional()
