@@ -24,13 +24,13 @@ export class WorkersService {
         const role = vacancyQuery.rows[0].requiredRole;
 
         const query = `
-            INSERT INTO "Workers" ("userEmail", "marketId", role, "vacancyId") 
+            INSERT INTO "Workers" ("userId", "marketId", role, "vacancyId") 
             VALUES ($1, $2, $3, $4) 
             RETURNING *;
         `;
 
         const values = [
-            worker.userEmail,
+            worker.userId,
             worker.marketId,
             role,
             worker.vacancyId
