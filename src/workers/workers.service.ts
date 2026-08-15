@@ -11,6 +11,12 @@ export class WorkersService {
         return result.rows;
     }
 
+    async findByUser(email: string) {
+        const query = 'SELECT m.*, w.role FROM "Markets" m JOIN "Workers" w ON m.id = w."marketId" JOIN "Users" u ON w."userId"::uuid = u.id WHERE u.email = $1';
+        const result = await this.pool.query(query, [email]);
+        return result.rows;
+    }
+
     async create(worker: CreateWorkerDto & { vacancyId: string }) {
         const vacancyQuery = await this.pool.query(
             'SELECT "requiredRole", "salary" FROM "Vacancies" WHERE id = $1',
