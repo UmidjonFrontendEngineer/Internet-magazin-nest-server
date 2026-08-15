@@ -13,7 +13,7 @@ export class WorkersService {
 
     async create(worker: CreateWorkerDto & { vacancyId: string }) {
         const vacancyQuery = await this.pool.query(
-            'SELECT "requiredRole" FROM "Vacancies" WHERE id = $1',
+            'SELECT "requiredRole", "salary" FROM "Vacancies" WHERE id = $1',
             [worker.vacancyId]
         );
 
@@ -22,10 +22,11 @@ export class WorkersService {
         }
 
         const role = vacancyQuery.rows[0].requiredRole;
+        const salary = vacancyQuery.rows[0].salary;
 
         const query = `
-            INSERT INTO "Workers" ("userId", "marketId", role, "vacancyId") 
-            VALUES ($1, $2, $3, $4) 
+            INSERT INTO "Workers" ("userId", "marketId", "role", "vacancyId", "salary") 
+            VALUES ($1, $2, $3, $4, $5) 
             RETURNING *;
         `;
 
@@ -33,7 +34,8 @@ export class WorkersService {
             worker.userId,
             worker.marketId,
             role,
-            worker.vacancyId
+            worker.vacancyId,
+            salary
         ];
 
         const result = await this.pool.query(query, values);
