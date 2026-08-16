@@ -1,15 +1,50 @@
-import { IsNotEmpty, IsString, IsUUID, IsOptional, IsArray } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, ValidateNested, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
 
-export class CreateCategoryDto {
-    @IsNotEmpty({ message: "Market ID kiritilishi shart" })
-    @IsUUID('4', { message: "Market ID yaroqli UUID formatida bo'lishi kerak" })
-    marketId!: string;
-
-    @IsNotEmpty({ message: "Kategoriya nomi kiritilishi shart" })
-    @IsString({ message: "Kategoriya nomi matn bo'lishi kerak" })
+class SubItemDto {
+    @IsString()
+    @IsNotEmpty()
     title!: string;
 
+    @IsString()
+    @IsNotEmpty()
+    image!: string;
+}
+
+class CategoryOptionDto {
+    @IsString()
+    @IsNotEmpty()
+    title!: string;
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => SubItemDto)
+    items!: SubItemDto[];
+}
+
+export class CreateCategoryDto {
+    @IsString()
+    @IsNotEmpty()
+    title!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    marketId!: string;
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => CategoryOptionDto)
+    options!: CategoryOptionDto[];
+}
+
+export class UpdateCategoryDto {
+    @IsString()
     @IsOptional()
-    @IsArray({ message: "Options massiv ko'rinishida bo'lishi kerak" })
-    options?: any[];
+    title?: string;
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => CategoryOptionDto)
+    @IsOptional()
+    options?: CategoryOptionDto[];
 }
