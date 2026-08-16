@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { DiscountsService } from './discounts.service';
 import { CreateDiscountDto } from './dto/create-discount.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('discounts')
 export class DiscountsController {
@@ -12,7 +13,9 @@ export class DiscountsController {
   }
 
   @Post()
-  async create(@Body() createDiscountDto: CreateDiscountDto) {
-    return await this.discountsService.create(createDiscountDto);
+  @UseGuards(JwtAuthGuard)
+  async create(@Body() createDiscountDto: CreateDiscountDto, @Req() req) {
+    const userEmail = req.user.email;
+    return await this.discountsService.create(createDiscountDto, userEmail);
   }
 }
