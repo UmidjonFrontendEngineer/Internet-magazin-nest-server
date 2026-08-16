@@ -17,6 +17,7 @@ import { AppService } from './app.service';
 import { VacanciesModule } from './vacancies/vacancies.module';
 import { WorkersModule } from './workers/workers.module';
 import { WherehousesModule } from './wherehouses/wherehouses.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
     imports: [
@@ -35,7 +36,8 @@ import { WherehousesModule } from './wherehouses/wherehouses.module';
         FollowingsModule,
         VacanciesModule,
         WorkersModule,
-        WherehousesModule
+        WherehousesModule,
+        CategoriesModule
     ],
     controllers: [AppController],
     providers: [AppService]
