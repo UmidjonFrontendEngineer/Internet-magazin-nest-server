@@ -16,7 +16,7 @@ export class CategoriesService {
         const { title, marketId, options } = createDto;
 
         const query = `
-            INSERT INTO "Categories" (marketid, title, options, "createdAt")
+            INSERT INTO "Categories" ("marketId", title, options, "createdAt")
             VALUES ($1, $2, $3, NOW())
             RETURNING *;
         `;
