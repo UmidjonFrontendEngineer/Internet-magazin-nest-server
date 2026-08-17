@@ -16,10 +16,7 @@ export class MarketAccessGuard implements CanActivate {
         const email = user.email;
 
         const userRes = await this.pool.query('SELECT id FROM "Users" WHERE email = $1', [email]);
-        if (userRes.rows.length === 0) {
-            throw new ForbiddenException('Foydalanuvchi bazadan topilmadi');
-        }
-        const userId = userRes.rows[0].id;
+        const userId = userRes.rows.length > 0 ? userRes.rows[0].id : null;
 
         let marketId = request.body?.marketId;
         const categoryId = request.params?.id;
@@ -37,21 +34,23 @@ export class MarketAccessGuard implements CanActivate {
         }
 
         const marketRes = await this.pool.query(
-            'SELECT * FROM "Markets" WHERE id = $1 AND "userId" = $2',
-            [marketId, userId]
+            'SELECT * FROM "Markets" WHERE id = $1 AND email = $2',
+            [marketId, email]
         );
 
         if (marketRes.rows.length > 0) {
             return true;
         }
 
-        const workerRes = await this.pool.query(
-            'SELECT * FROM "Workers" WHERE "marketId" = $1 AND "userId" = $2 AND role = ANY($3)',
-            [marketId, userId, ['admin', 'owner']]
-        );
+        if (userId) {
+            const workerRes = await this.pool.query(
+                'SELECT * FROM "Workers" WHERE "marketId" = $1 AND "userId" = $2 AND role = ANY($3)',
+                [marketId, userId, ['admin', 'owner']]
+            );
 
-        if (workerRes.rows.length > 0) {
-            return true;
+            if (workerRes.rows.length > 0) {
+                return true;
+            }
         }
 
         throw new ForbiddenException('Sizda bu marketda o\'zgartirish kiritish huquqi yo\'q');
