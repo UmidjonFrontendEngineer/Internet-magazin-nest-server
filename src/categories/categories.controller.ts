@@ -8,15 +8,15 @@ import { MarketAccessGuard } from 'src/auth/market-access.guard';
 export class CategoriesController {
     constructor(private readonly categoriesService: CategoriesService) { }
 
+    @Get()
+    findAll() {
+        return this.categoriesService.findAll();
+    }
+
     @Post()
     @UseGuards(JwtAuthGuard, MarketAccessGuard)
     create(@Body() createCategoryDto: CreateCategoryDto) {
         return this.categoriesService.create(createCategoryDto);
-    }
-
-    @Get()
-    findAll() {
-        return this.categoriesService.findAll();
     }
 
     @Get(':id')

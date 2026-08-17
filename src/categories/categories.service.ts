@@ -6,11 +6,17 @@ import { CreateCategoryDto, UpdateCategoryDto } from './dto/create-category.dto'
 export class CategoriesService {
     constructor(@Inject('DATABASE_POOL') private pool: Pool) { }
 
+    async findAll() {
+        const query = `SELECT * FROM "Categories" ORDER BY "createdAt" DESC;`;
+        const result = await this.pool.query(query);
+        return result.rows;
+    }
+
     async create(createDto: CreateCategoryDto) {
         const { title, marketId, options } = createDto;
 
         const query = `
-            INSERT INTO categories (marketid, title, options, "createdAt")
+            INSERT INTO "Categories" (marketid, title, options, "createdAt")
             VALUES ($1, $2, $3, NOW())
             RETURNING *;
         `;
@@ -20,14 +26,8 @@ export class CategoriesService {
         return result.rows[0];
     }
 
-    async findAll() {
-        const query = `SELECT * FROM categories ORDER BY "createdAt" DESC;`;
-        const result = await this.pool.query(query);
-        return result.rows;
-    }
-
     async findOne(id: string) {
-        const query = `SELECT * FROM categories WHERE id = $1;`;
+        const query = `SELECT * FROM "Categories" WHERE id = $1;`;
         const result = await this.pool.query(query, [id]);
 
         if (result.rows.length === 0) {
@@ -59,7 +59,7 @@ export class CategoriesService {
 
         values.push(id);
         const query = `
-            UPDATE categories
+            UPDATE "Categories"
             SET ${fields.join(', ')}
             WHERE id = $${index}
             RETURNING *;
@@ -71,7 +71,7 @@ export class CategoriesService {
 
     async remove(id: string) {
         await this.findOne(id);
-        const query = `DELETE FROM categories WHERE id = $1 RETURNING *;`;
+        const query = `DELETE FROM "Categories" WHERE id = $1 RETURNING *;`;
         const result = await this.pool.query(query, [id]);
         return result.rows[0];
     }
