@@ -18,7 +18,7 @@ export class MarketAccessGuard implements CanActivate {
 
         const categoryId = request.params?.id;
         if (!marketId && categoryId) {
-            const catRes = await this.pool.query('SELECT marketid FROM categories WHERE id = $1', [categoryId]);
+            const catRes = await this.pool.query('SELECT marketid FROM "Categories" WHERE id = $1', [categoryId]);
             if (catRes.rows.length === 0) {
                 throw new NotFoundException('Kategoriya topilmadi');
             }
@@ -30,7 +30,7 @@ export class MarketAccessGuard implements CanActivate {
         }
 
         const marketRes = await this.pool.query(
-            'SELECT * FROM markets WHERE id = $1 AND userid = $2',
+            'SELECT * FROM "Markets" WHERE id = $1 AND userid = $2',
             [marketId, userId]
         );
 
@@ -39,7 +39,7 @@ export class MarketAccessGuard implements CanActivate {
         }
 
         const workerRes = await this.pool.query(
-            'SELECT * FROM workers WHERE marketid = $1 AND userid = $2 AND role = ANY($3)',
+            'SELECT * FROM "Workers" WHERE marketid = $1 AND userid = $2 AND role = ANY($3)',
             [marketId, userId, ['admin', 'owner']]
         );
 
