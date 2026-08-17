@@ -3,20 +3,27 @@ import { Pool } from 'pg';
 
 @Injectable()
 export class MarketAccessGuard implements CanActivate {
-    constructor(@Inject('DATABASE_POOL') private pool: Pool) {}
+    constructor(@Inject('DATABASE_POOL') private pool: Pool) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
         const user = request.user;
 
-        if (!user || (!user.id && !user.sub)) {
+        if (!user || !user.email) {
             throw new ForbiddenException('Foydalanuvchi autentifikatsiyadan o\'tmagan');
         }
 
-        const userId = user.id || user.sub;
-        let marketId = request.body?.marketId;
+        const email = user.email;
 
+        const userRes = await this.pool.query('SELECT id FROM "Users" WHERE email = $1', [email]);
+        if (userRes.rows.length === 0) {
+            throw new ForbiddenException('Foydalanuvchi bazadan topilmadi');
+        }
+        const userId = userRes.rows[0].id;
+
+        let marketId = request.body?.marketId;
         const categoryId = request.params?.id;
+
         if (!marketId && categoryId) {
             const catRes = await this.pool.query('SELECT marketid FROM "Categories" WHERE id = $1', [categoryId]);
             if (catRes.rows.length === 0) {
