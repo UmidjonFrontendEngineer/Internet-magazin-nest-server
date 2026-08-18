@@ -5,7 +5,7 @@ import { UpdateFollowingDto } from './dto/update-following.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('followings')
-export class FollowersController {
+export class FollowingsController {
     constructor(private readonly followingsService: FollowingsService) { }
 
     @Get()
