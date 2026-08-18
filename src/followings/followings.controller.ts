@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Req } from '@nestjs/common';
 import { FollowingsService } from './followings.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateFollowingDto } from './dto/create-following.dto';
+import { UpdateFollowingDto } from './dto/update-following.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('followings')
-export class FollowingsController {
+export class FollowersController {
     constructor(private readonly followingsService: FollowingsService) { }
 
     @Get()
@@ -13,7 +15,19 @@ export class FollowingsController {
 
     @Post()
     @UseGuards(JwtAuthGuard)
-    async create(@Body() body: { userId: string; following: any[] }) {
-        return await this.followingsService.create(body.userId, body.following);
+    async create(@Body() createFollowerDto: CreateFollowingDto, @Req() req) {
+        return await this.followingsService.create(createFollowerDto);
+    }
+
+    @Patch(':id')
+    @UseGuards(JwtAuthGuard)
+    async update(@Param('id') id: string, @Body() updateFollowerDto: UpdateFollowingDto) {
+        return await this.followingsService.update(id, updateFollowerDto);
+    }
+
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard)
+    async remove(@Param('id') id: string) {
+        return await this.followingsService.remove(id);
     }
 }
