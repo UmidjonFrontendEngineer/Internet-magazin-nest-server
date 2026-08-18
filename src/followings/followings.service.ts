@@ -1,7 +1,5 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Pool } from 'pg';
-import { CreateFollowingDto } from './dto/create-following.dto';
-import { UpdateFollowingDto } from './dto/update-following.dto';
 
 @Injectable()
 export class FollowingsService {
@@ -12,41 +10,52 @@ export class FollowingsService {
         return result.rows;
     }
 
-    async create(dto: CreateFollowingDto) {
-        const { userId, following } = dto;
-        const jsonFollowing = JSON.stringify(following || []);
-
-        const result = await this.pool.query(
-            'INSERT INTO "Followers" ("userId", following) VALUES ($1, $2::json) RETURNING *',
-            [userId, jsonFollowing],
-        );
-        return result.rows[0];
-    }
-
-    async update(id: string, dto: UpdateFollowingDto) {
-        const existing = await this.pool.query('SELECT * FROM "Followers" WHERE id = $1', [id]);
-        if (existing.rows.length === 0) {
-            throw new NotFoundException("Follower topilmadi!");
+    async toggleFollow(marketId: string, userEmail: string) {
+        const marketCheck = await this.pool.query('SELECT id FROM "Markets" WHERE id = $1', [marketId]);
+        if (marketCheck.rows.length === 0) {
+            throw new NotFoundException("Bunday market mavjud emas!");
         }
 
-        const current = existing.rows[0];
-        const userId = dto.userId || current.userId;
-        const following = dto.following ? JSON.stringify(dto.following) : JSON.stringify(current.following);
-
-        const result = await this.pool.query(
-            'UPDATE "Followers" SET "userId" = $1, following = $2::json WHERE id = $3 RETURNING *',
-            [userId, following, id],
-        );
-        return result.rows[0];
-    }
-
-    async remove(id: string) {
-        const existing = await this.pool.query('SELECT * FROM "Followers" WHERE id = $1', [id]);
-        if (existing.rows.length === 0) {
-            throw new NotFoundException("Follower topilmadi!");
+        const userQuery = await this.pool.query('SELECT id FROM "Users" WHERE email = $1', [userEmail]);
+        if (userQuery.rows.length === 0) {
+            throw new NotFoundException("Foydalanuvchi topilmadi!");
         }
+        const userId = userQuery.rows[0].id;
 
-        const result = await this.pool.query('DELETE FROM "Followers" WHERE id = $1 RETURNING *', [id]);
-        return { message: "Muvaffaqiyatli o'chirildi", deleted: result.rows[0] };
+        const followerQuery = await this.pool.query('SELECT * FROM "Followers" WHERE "userId" = $1', [userId]);
+
+        let currentFollowing: string[] = [];
+
+        if (followerQuery.rows.length === 0) {
+            currentFollowing = [marketId];
+            const jsonString = JSON.stringify(currentFollowing);
+
+            const insertRes = await this.pool.query(
+                'INSERT INTO "Followers" ("userId", following) VALUES ($1, $2::json) RETURNING *',
+                [userId, jsonString]
+            );
+            return { message: "Follow qilindi", data: insertRes.rows[0] };
+        } else {
+            const row = followerQuery.rows[0];
+            currentFollowing = Array.isArray(row.following) ? row.following : JSON.parse(row.following || '[]');
+
+            const index = currentFollowing.indexOf(marketId);
+            if (index > -1) {
+                currentFollowing.splice(index, 1);
+            } else {
+                currentFollowing.push(marketId);
+            }
+
+            const jsonString = JSON.stringify(currentFollowing);
+            const updateRes = await this.pool.query(
+                'UPDATE "Followers" SET following = $1::json WHERE "userId" = $2 RETURNING *',
+                [jsonString, userId]
+            );
+
+            return {
+                message: index > -1 ? "Unfollow qilindi" : "Follow qilindi",
+                data: updateRes.rows[0]
+            };
+        }
     }
 }
