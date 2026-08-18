@@ -1,15 +1,15 @@
-import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 export class CreateSliderDto {
-    @IsNotEmpty({ message: "Rasm havolasi (imageUrl) bo'sh bo'lmasligi kerak" })
-    @IsString({ message: "Rasm havolasi matn shaklida bo'lishi kerak" })
-    imageUrl!: string;
+    @IsOptional()
+    @IsString()
+    image?: string;
 
-    @IsNotEmpty({ message: "Yo'naltirish havolasi (redirectUrl) kiritilishi shart" })
-    @IsString({ message: "Yo'naltirish havolasi matn shaklida bo'lishi kerak" })
-    redirectUrl!: string;
+    @IsNotEmpty({ message: "Havola (link) kiritilishi shart" })
+    @IsString({ message: "Havola matn shaklida bo'lishi kerak" })
+    link!: string;
 
-    @IsNotEmpty({ message: "Market kiritilishi shart" })
-    @IsString({ message: "Market matn shaklida bo'lishi kerak" })
-    market!: string;
+    @IsNotEmpty({ message: "MarketId kiritilishi shart" })
+    @IsString({ message: "MarketId matn shaklida bo'lishi kerak" })
+    marketId!: string;
 }

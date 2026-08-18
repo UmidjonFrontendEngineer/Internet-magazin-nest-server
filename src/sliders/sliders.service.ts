@@ -48,13 +48,13 @@ export class SlidersService {
   }
 
   async create(createSliderDto: CreateSliderDto, userEmail: string) {
-    const { imageUrl, redirectUrl, market } = createSliderDto;
+    const { image, link, marketId } = createSliderDto;
 
-    await this.checkMarketAccess(market, userEmail);
+    await this.checkMarketAccess(marketId, userEmail);
 
     const result = await this.pool.query(
-      'INSERT INTO "Sliders" ("imageUrl", "redirectUrl", market) VALUES ($1, $2, $3) RETURNING *',
-      [imageUrl, redirectUrl, market],
+      'INSERT INTO "Sliders" (image, link, "marketId") VALUES ($1, $2, $3) RETURNING *',
+      [image, link, marketId],
     );
 
     return result.rows[0];
@@ -68,22 +68,22 @@ export class SlidersService {
     }
 
     const slider = existing.rows[0];
-    await this.checkMarketAccess(slider.market, userEmail);
+    await this.checkMarketAccess(slider.marketId, userEmail);
 
-    const { imageUrl, redirectUrl, market } = updateSliderDto;
-    const targetMarket = market || slider.market;
+    const { image, link, marketId } = updateSliderDto;
+    const targetMarket = marketId || slider.marketId;
 
-    if (market && market !== slider.market) {
+    if (marketId && marketId !== slider.marketId) {
       await this.checkMarketAccess(targetMarket, userEmail);
     }
 
     const result = await this.pool.query(
       `UPDATE "Sliders" 
-       SET "imageUrl" = COALESCE($1, "imageUrl"), 
-           "redirectUrl" = COALESCE($2, "redirectUrl"), 
-           market = COALESCE($3, market) 
+       SET image = COALESCE($1, image), 
+           link = COALESCE($2, link), 
+           "marketId" = COALESCE($3, "marketId") 
        WHERE id = $4 RETURNING *`,
-      [imageUrl, redirectUrl, targetMarket, id],
+      [image, link, targetMarket, id],
     );
 
     return result.rows[0];
@@ -97,7 +97,7 @@ export class SlidersService {
     }
 
     const slider = existing.rows[0];
-    await this.checkMarketAccess(slider.market, userEmail);
+    await this.checkMarketAccess(slider.marketId, userEmail);
 
     const result = await this.pool.query('DELETE FROM "Sliders" WHERE id = $1 RETURNING *', [id]);
     return { message: "Slider muvaffaqiyatli o'chirildi", deleted: result.rows[0] };

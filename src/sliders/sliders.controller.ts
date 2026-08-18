@@ -1,8 +1,13 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Req,
+  UploadedFile, UseInterceptors, BadRequestException
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { SlidersService } from './sliders.service';
 import { CreateSliderDto } from './dto/create-slider.dto';
 import { UpdateSliderDto } from './dto/update-slider.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { uploadImageToImgBB } from 'src/common/helpers/image-upload.helper';
 
 @Controller('sliders')
 export class SlidersController {
@@ -15,20 +20,44 @@ export class SlidersController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async create(@Body() createSliderDto: CreateSliderDto, @Req() req) {
+  @UseInterceptors(FileInterceptor('image'))
+  async create(
+    @Body() createSliderDto: CreateSliderDto,
+    @UploadedFile() file: { buffer: Buffer; originalname: string },
+    @Req() req,
+  ) {
+    if (!file) {
+      throw new BadRequestException("Rasm yuklanishi shart!");
+    }
+    const imageUrl = await uploadImageToImgBB(file);
     const userEmail = req.user.email;
-    return await this.slidersService.create(createSliderDto, userEmail);
+
+    return await this.slidersService.create(
+      { ...createSliderDto, image: imageUrl },
+      userEmail
+    );
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('image'))
   async update(
     @Param('id') id: string,
     @Body() updateSliderDto: UpdateSliderDto,
+    @UploadedFile() file: { buffer: Buffer; originalname: string },
     @Req() req,
   ) {
+    let imageUrl: string | undefined;
+    if (file) {
+      imageUrl = await uploadImageToImgBB(file);
+    }
+
     const userEmail = req.user.email;
-    return await this.slidersService.update(id, updateSliderDto, userEmail);
+    return await this.slidersService.update(
+      id,
+      { ...updateSliderDto, ...(imageUrl && { image: imageUrl }) },
+      userEmail
+    );
   }
 
   @Delete(':id')
