@@ -1,17 +1,25 @@
 import { IsString, IsNotEmpty, IsArray, ValidateNested, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
-class SubItemDto {
+export class SubItemDto {
+    @IsString()
+    @IsOptional()
+    id?: string;
+
     @IsString()
     @IsNotEmpty()
     title!: string;
 
     @IsString()
-    @IsNotEmpty()
-    image!: string;
+    @IsOptional()
+    image?: string;
 }
 
-class CategoryOptionDto {
+export class CategoryOptionDto {
+    @IsString()
+    @IsOptional()
+    id?: string;
+
     @IsString()
     @IsNotEmpty()
     title!: string;

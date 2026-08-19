@@ -13,7 +13,7 @@ export class ProductsService {
   }
 
   async createProduct(body: any, files: Array<Express.Multer.File>, user: any) {
-    const { title, price, quantity, marketId, warehouseId, descriptionUz, descriptionEn, descriptionRu, gradient } = body;
+    const { title, price, quantity, marketId, warehouseId, descriptionUz, descriptionEn, descriptionRu, gradient, discountId, categoryId } = body;
 
     const marketCheck = await this.pool.query(
       'SELECT * FROM "Markets" WHERE id = $1 AND email = $2',
@@ -100,8 +100,8 @@ export class ProductsService {
 
     const query = `
       INSERT INTO "Products"
-      (title, description, price, quantity, "marketId", "warehouseId", images, options, gradient, "createdAt")
-      VALUES ($1, $2::jsonb, $3, $4, $5, $6, $7::jsonb, $8::jsonb, $9::jsonb, NOW())
+      (title, description, price, quantity, "marketId", "warehouseId", images, options, gradient, 'discountId', "categoryId", "createdAt")
+      VALUES ($1, $2::jsonb, $3, $4, $5, $6, $7::jsonb, $8::jsonb, $9::jsonb, $10, $11, NOW())
       RETURNING *;
     `;
 
@@ -114,7 +114,9 @@ export class ProductsService {
       finalWarehouseId,
       JSON.stringify(imageUrls),
       JSON.stringify(formattedOptions),
-      parsedGradient
+      parsedGradient,
+      discountId,
+      categoryId
     ]);
 
     return result.rows[0];
