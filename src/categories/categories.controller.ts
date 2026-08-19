@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFiles, Req } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFiles, Req, BadRequestException } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CategoriesService } from './categories.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -17,8 +17,12 @@ export class CategoriesController {
     @Post()
     @UseGuards(JwtAuthGuard, MarketAccessGuard)
     @UseInterceptors(AnyFilesInterceptor())
-    create(@UploadedFiles() files: Express.Multer.File[], @Req() req: Request) {
-        return this.categoriesService.create(req.body, files);
+    async create(@UploadedFiles() files: Express.Multer.File[], @Req() req: Request) {
+        const body = req.body;
+        if (!body) {
+            throw new BadRequestException('FormData maʼlumotlari kelmadi');
+        }
+        return this.categoriesService.create(body, files || []);
     }
 
     @Get(':id')

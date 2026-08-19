@@ -1,8 +1,7 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Pool } from 'pg';
 import { v4 as uuidv4 } from 'uuid';
-import { v2 as cloudinary } from 'cloudinary';
-import { Readable } from 'stream';
+import { uploadImageToImgBB } from 'src/common/helpers/image-upload.helper';
 
 interface ProcessedItem {
     id: string;
@@ -18,20 +17,9 @@ interface ProcessedOption {
 
 @Injectable()
 export class CategoriesService {
-    constructor(@Inject('DATABASE_POOL') private pool: Pool) { }
-
-    private async uploadToCloudinary(file: Express.Multer.File): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const uploadStream = cloudinary.uploader.upload_stream(
-                { folder: 'categories' },
-                (error, result) => {
-                    if (error) return reject(error);
-                    resolve(result!.secure_url);
-                },
-            );
-            Readable.from(file.buffer).pipe(uploadStream);
-        });
-    }
+    constructor(
+        @Inject('DATABASE_POOL') private pool: Pool,
+    ) { }
 
     private async processOptions(optionsInput: any, files: Express.Multer.File[] = []): Promise<ProcessedOption[]> {
         let options = optionsInput;
@@ -39,7 +27,7 @@ export class CategoriesService {
             try {
                 options = JSON.parse(options);
             } catch (e) {
-                throw new BadRequestException('Options formati noto‘g‘ri (JSON parse xatoligi)');
+                throw new BadRequestException('Options formati noto‘g‘ri JSON string');
             }
         }
 
@@ -56,19 +44,19 @@ export class CategoriesService {
 
         for (let optIndex = 0; optIndex < options.length; optIndex++) {
             const opt = options[optIndex];
-            const optionId = opt.id || uuidv4(); // Frontend yoki avtomatik UUID
+            const optionId = opt.id || uuidv4();
             const processedItems: ProcessedItem[] = [];
 
             if (Array.isArray(opt.items)) {
                 for (let itemIndex = 0; itemIndex < opt.items.length; itemIndex++) {
                     const item = opt.items[itemIndex];
-                    const itemId = item.id || uuidv4(); // SubItem uchun UUID
+                    const itemId = item.id || uuidv4();
                     let imageUrl = item.image || '';
 
                     const fileKey = `file_${optIndex}_${itemIndex}`;
                     if (fileMap.has(fileKey)) {
                         const file = fileMap.get(fileKey)!;
-                        imageUrl = await this.uploadToCloudinary(file);
+                        imageUrl = await uploadImageToImgBB(file);
                     }
 
                     processedItems.push({
@@ -95,10 +83,21 @@ export class CategoriesService {
         return result.rows;
     }
 
+    async findOne(id: string) {
+        const query = `SELECT * FROM "Categories" WHERE id = $1;`;
+        const result = await this.pool.query(query, [id]);
+
+        if (result.rows.length === 0) {
+            throw new NotFoundException(`Kategoriya topilmadi`);
+        }
+        return result.rows[0];
+    }
+
     async create(body: any, files: Express.Multer.File[]) {
         const { title, marketId } = body;
+
         if (!title || !marketId) {
-            throw new BadRequestException('Title va marketId kiritilishi shart');
+            throw new BadRequestException('Title va marketId kiritilishi shart!');
         }
 
         const options = await this.processOptions(body.options, files);
@@ -110,18 +109,13 @@ export class CategoriesService {
         `;
 
         const values = [marketId, title, JSON.stringify(options)];
-        const result = await this.pool.query(query, values);
-        return result.rows[0];
-    }
 
-    async findOne(id: string) {
-        const query = `SELECT * FROM "Categories" WHERE id = $1;`;
-        const result = await this.pool.query(query, [id]);
-
-        if (result.rows.length === 0) {
-            throw new NotFoundException(`Kategoriya topilmadi`);
+        try {
+            const result = await this.pool.query(query, values);
+            return result.rows[0];
+        } catch (error: any) {
+            throw new BadRequestException(`Bazaga yozishda xatolik: ${error.message}`);
         }
-        return result.rows[0];
     }
 
     async update(id: string, body: any, files: Express.Multer.File[]) {
@@ -156,8 +150,12 @@ export class CategoriesService {
             RETURNING *;
         `;
 
-        const result = await this.pool.query(query, values);
-        return result.rows[0];
+        try {
+            const result = await this.pool.query(query, values);
+            return result.rows[0];
+        } catch (error: any) {
+            throw new BadRequestException(`Yangilashda xatolik: ${error.message}`);
+        }
     }
 
     async remove(id: string) {
