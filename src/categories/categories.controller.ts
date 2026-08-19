@@ -3,7 +3,7 @@ import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CategoriesService } from './categories.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { MarketAccessGuard } from 'src/auth/market-access.guard';
-import { Request } from 'express';
+import type { Request } from 'express';
 
 @Controller('categories')
 export class CategoriesController {

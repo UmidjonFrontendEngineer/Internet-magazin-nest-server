@@ -4,6 +4,18 @@ import { v4 as uuidv4 } from 'uuid';
 import { v2 as cloudinary } from 'cloudinary';
 import { Readable } from 'stream';
 
+interface ProcessedItem {
+    id: string;
+    title: string;
+    image: string;
+}
+
+interface ProcessedOption {
+    id: string;
+    title: string;
+    items: ProcessedItem[];
+}
+
 @Injectable()
 export class CategoriesService {
     constructor(@Inject('DATABASE_POOL') private pool: Pool) { }
@@ -40,12 +52,12 @@ export class CategoriesService {
             }
         }
 
-        const processedOptions = [];
+        const processedOptions: ProcessedOption[] = [];
 
         for (let optIndex = 0; optIndex < options.length; optIndex++) {
             const opt = options[optIndex];
             const optionId = opt.id || uuidv4();
-            const processedItems = [];
+            const processedItems: ProcessedItem[] = [];
 
             if (Array.isArray(opt.items)) {
                 for (let itemIndex = 0; itemIndex < opt.items.length; itemIndex++) {
