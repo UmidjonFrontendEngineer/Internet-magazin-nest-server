@@ -14,7 +14,13 @@ export class ProductsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(
+    AnyFilesInterceptor({
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+    }),
+  )
   async createProduct(@Req() req, @UploadedFiles() files: Array<Express.Multer.File>) {
     return await this.productsService.createProduct(req.body, files, req.user);
   }
