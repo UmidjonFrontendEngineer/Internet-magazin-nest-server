@@ -13,7 +13,7 @@ export class ProductsService {
   }
 
   async createProduct(body: any, files: Array<Express.Multer.File>, user: any) {
-    const { title, price, quantity, marketId, warehouseId, descriptionUz, descriptionEn, descriptionRu } = body;
+    const { title, price, quantity, marketId, warehouseId, descriptionUz, descriptionEn, descriptionRu, gradient } = body;
 
     const marketCheck = await this.pool.query(
       'SELECT * FROM "Markets" WHERE id = $1 AND email = $2',
@@ -84,13 +84,24 @@ export class ProductsService {
           }))
       }));
 
+    let parsedGradient: string | null = null;
+    if (gradient) {
+      try {
+        const parsed = typeof gradient === 'string' ? JSON.parse(gradient) : gradient;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          parsedGradient = JSON.stringify(parsed);
+        }
+      } catch (e) {
+        parsedGradient = null;
+      }
+    }
+
     const finalWarehouseId = warehouseId || 'warehouse-id-32';
 
-    // 5. Bazaga saqlash
     const query = `
-      INSERT INTO "Products" 
-      (title, description, price, quantity, "marketId", "warehouseId", images, options, "createdAt")
-      VALUES ($1, $2::jsonb, $3, $4, $5, $6, $7::jsonb, $8::jsonb, NOW())
+      INSERT INTO "Products"
+      (title, description, price, quantity, "marketId", "warehouseId", images, options, gradient, "createdAt")
+      VALUES ($1, $2::jsonb, $3, $4, $5, $6, $7::jsonb, $8::jsonb, $9::jsonb, NOW())
       RETURNING *;
     `;
 
@@ -102,7 +113,8 @@ export class ProductsService {
       marketId,
       finalWarehouseId,
       JSON.stringify(imageUrls),
-      JSON.stringify(formattedOptions)
+      JSON.stringify(formattedOptions),
+      parsedGradient
     ]);
 
     return result.rows[0];
