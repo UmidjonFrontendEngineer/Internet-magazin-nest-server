@@ -33,7 +33,7 @@ export class CategoriesService {
         });
     }
 
-    private async processOptions(optionsInput: any, files: Express.Multer.File[] = []) {
+    private async processOptions(optionsInput: any, files: Express.Multer.File[] = []): Promise<ProcessedOption[]> {
         let options = optionsInput;
         if (typeof options === 'string') {
             try {
@@ -56,13 +56,13 @@ export class CategoriesService {
 
         for (let optIndex = 0; optIndex < options.length; optIndex++) {
             const opt = options[optIndex];
-            const optionId = opt.id || uuidv4();
+            const optionId = opt.id || uuidv4(); // Frontend yoki avtomatik UUID
             const processedItems: ProcessedItem[] = [];
 
             if (Array.isArray(opt.items)) {
                 for (let itemIndex = 0; itemIndex < opt.items.length; itemIndex++) {
                     const item = opt.items[itemIndex];
-                    const itemId = item.id || uuidv4();
+                    const itemId = item.id || uuidv4(); // SubItem uchun UUID
                     let imageUrl = item.image || '';
 
                     const fileKey = `file_${optIndex}_${itemIndex}`;
@@ -105,7 +105,7 @@ export class CategoriesService {
 
         const query = `
             INSERT INTO "Categories" ("marketId", title, options, "createdAt")
-            VALUES ($1, $2, $3, NOW())
+            VALUES ($1, $2, $3::jsonb, NOW())
             RETURNING *;
         `;
 
@@ -139,7 +139,8 @@ export class CategoriesService {
         if (body.options !== undefined || (files && files.length > 0)) {
             const rawOptions = body.options !== undefined ? body.options : existingCat.options;
             const options = await this.processOptions(rawOptions, files);
-            fields.push(`options = $${index++}`);
+
+            fields.push(`options = $${index++}::jsonb`);
             values.push(JSON.stringify(options));
         }
 
