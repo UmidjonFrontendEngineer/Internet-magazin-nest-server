@@ -18,7 +18,12 @@ export class MarketAccessGuard implements CanActivate {
         const userRes = await this.pool.query('SELECT id FROM "Users" WHERE email = $1', [email]);
         const userId = userRes.rows.length > 0 ? userRes.rows[0].id : null;
 
-        let marketId = request.body?.marketId || request.query?.marketId;
+        let marketId = request.headers['marketid'] || request.headers['market-id'];
+
+        if (!marketId) {
+            marketId = request.body?.marketId;
+        }
+
         const categoryId = request.params?.id;
 
         if (!marketId && categoryId) {
@@ -27,10 +32,6 @@ export class MarketAccessGuard implements CanActivate {
                 throw new NotFoundException('Kategoriya topilmadi');
             }
             marketId = catRes.rows[0].marketId;
-        }
-
-        if (!marketId) {
-            marketId = request.headers['marketid'] || request.headers['market-id'];
         }
 
         if (!marketId) {
