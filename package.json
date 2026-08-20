@@ -1,8 +1,8 @@
 {
   "name": "nestjs",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "A comprehensive e-commerce backend system built with Nest.js, featuring live real-time database endpoints for multiple stores and user tracking.",
+  "author": "Umidjon Sharipov",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -43,7 +43,7 @@
     "resend": "^6.18.0",
     "rxjs": "^7.8.1",
     "typeorm": "^1.1.0",
-    "uuid": "^14.0.2"
+    "uuid": "9.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
