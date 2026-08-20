@@ -4,5 +4,10 @@
       "source": "/(.*)",
       "destination": "/api/vercel"
     }
-  ]
+  ],
+  "functions": {
+    "api/vercel.ts": {
+      "includeFiles": "public/**"
+    }
+  }
 }
