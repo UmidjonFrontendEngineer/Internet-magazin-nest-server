@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 
 export class CreateWarehouseDto {
     @IsNotEmpty({ message: "Ombor nomi bo'lishi shart" })
-    @IsString({}, { message: "Ombor nomini kiriting" })
+    @IsString({ message: "Ombor nomini kiriting" })
     title!: string;
 
     @IsNotEmpty({ message: "Email kiritilishi shart" })
@@ -20,8 +20,7 @@ export class CreateWarehouseDto {
     @IsNumber({}, { message: "Uzunlik raqam bo'lishi kerak" })
     lng!: number;
 
-
     @IsNotEmpty({ message: "marketId kiritilishi shart" })
-    @IsString({}, { message: "MarketId ni kiriting" })
+    @IsString({ message: "MarketId ni kiriting" })
     marketId!: string;
 }
