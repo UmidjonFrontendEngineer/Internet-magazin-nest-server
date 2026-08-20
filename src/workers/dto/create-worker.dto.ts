@@ -11,7 +11,7 @@ export class CreateWorkerDto {
 
     @IsOptional()
     @IsString({ message: "Rol matn shaklida bo'lishi kerak" })
-    role?: string;
+    role!: string;
 
     @IsNotEmpty()
     @IsUUID()
