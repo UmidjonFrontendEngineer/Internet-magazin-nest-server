@@ -16,7 +16,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { VacanciesModule } from './vacancies/vacancies.module';
 import { WorkersModule } from './workers/workers.module';
-import { WherehousesModule } from './wherehouses/wherehouses.module';
+import { WarehousesModule } from './warehouses/warehouses.module';
 import { CategoriesModule } from './categories/categories.module';
 
 @Module({
@@ -36,7 +36,7 @@ import { CategoriesModule } from './categories/categories.module';
         FollowingsModule,
         VacanciesModule,
         WorkersModule,
-        WherehousesModule,
+        WarehousesModule,
         CategoriesModule
     ],
     controllers: [AppController],

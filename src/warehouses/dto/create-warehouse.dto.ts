@@ -1,7 +1,11 @@
 import { IsNotEmpty, IsString, IsEmail, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class CreateWherehouseDto {
+export class CreateWarehouseDto {
+    @IsNotEmpty({ message: "Ombor nomi bo'lishi shart" })
+    @IsString({}, { message: "Ombor nomini kiriting" })
+    title!: string;
+
     @IsNotEmpty({ message: "Email kiritilishi shart" })
     @IsEmail({}, { message: "Yaroqli email manzilini kiriting" })
     email!: string;
@@ -15,4 +19,9 @@ export class CreateWherehouseDto {
     @Type(() => Number)
     @IsNumber({}, { message: "Uzunlik raqam bo'lishi kerak" })
     lng!: number;
+
+
+    @IsNotEmpty({ message: "marketId kiritilishi shart" })
+    @IsString({}, { message: "MarketId ni kiriting" })
+    marketId!: string;
 }
