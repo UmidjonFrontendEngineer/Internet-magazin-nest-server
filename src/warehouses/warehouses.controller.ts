@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, Headers, UseGuards } from '@nestjs/common';
 import { WarehousesService } from './warehouses.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateWarehouseDto } from './dto/create-warehouse.dto';
@@ -7,14 +7,18 @@ import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 export class WarehousesController {
     constructor(private readonly warehousesService: WarehousesService) { }
 
-    @Get()
-    async findAll() {
-        return await this.warehousesService.findAll();
-    }
-
     @Post()
     @UseGuards(JwtAuthGuard)
-    async create(@Req() req) {
-        return await this.warehousesService.create(req.body);
+    async create(
+        @Headers() headers: any,
+        @Body() body: CreateWarehouseDto
+    ) {
+        const validation = {
+            authorization: headers['authorization'],
+            marketId: headers['marketid'],
+            role: headers['role'],
+        };
+
+        return await this.warehousesService.create(body, validation);
     }
 }
