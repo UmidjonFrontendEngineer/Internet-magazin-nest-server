@@ -14,9 +14,9 @@ export async function validateMarketRole(
     }
 
     try {
-        const token = authorization.replace('Bearer ', '');
+        const token = authorization.replace('Bearer ', '').trim();
         const decodedUser: any = jwtService.verify(token);
-        const userEmail = decodedUser.email;
+        const userEmail = decodedUser?.email;
 
         if (!userEmail) {
             throw new ForbiddenException("Token yaroqsiz: email topilmadi!");
@@ -44,6 +44,9 @@ export async function validateMarketRole(
 
         return true;
     } catch (error) {
+        if (error instanceof ForbiddenException) {
+            throw error;
+        }
         throw new ForbiddenException("Token yaroqsiz yoki ruxsat etilmadi!");
     }
 }
