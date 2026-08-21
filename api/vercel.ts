@@ -18,6 +18,7 @@ async function bootstrap() {
       origin: true,
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       credentials: true,
+      allowedHeaders: 'Content-Type, Authorization, Accept, X-Requested-With, marketid, token, x-custom-header',
     });
 
     await nestApp.init();
@@ -30,7 +31,10 @@ export default async function handler(req: any, res: any) {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, X-Requested-With');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization, Accept, X-Requested-With, marketid, token, x-custom-header, Range'
+    );
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     return res.status(200).end();
   }
