@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFiles, Req, BadRequestException } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CategoriesService } from './categories.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { MarketAccessGuard } from 'src/auth/market-access.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { MarketAccessGuard } from '../auth/market-access.guard';
 import type { Request } from 'express';
 
 @Controller('categories')

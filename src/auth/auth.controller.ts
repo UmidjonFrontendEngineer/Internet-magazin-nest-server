@@ -2,7 +2,7 @@ import { Controller, Post, Patch, Get, Delete, Body, Headers, UnauthorizedExcept
 import { AuthService } from './auth.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { uploadImageToImgBB } from 'src/common/helpers/image-upload.helper';
+import { uploadImageToImgBB } from '../common/helpers/image-upload.helper';
 
 @Controller('auth')
 export class AuthController {

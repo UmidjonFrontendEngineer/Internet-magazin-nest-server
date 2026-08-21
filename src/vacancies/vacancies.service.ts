@@ -1,7 +1,7 @@
 import { Injectable, Inject, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Pool } from 'pg';
 import { CreateVacancyDto } from './dto/create-vacancy.dto';
-import { uploadImageToImgBB } from 'src/common/helpers/image-upload.helper';
+import { uploadImageToImgBB } from '../common/helpers/image-upload.helper';
 
 @Injectable()
 export class VacanciesService {

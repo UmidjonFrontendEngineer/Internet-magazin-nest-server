@@ -1,7 +1,7 @@
 import { Controller, Post, Get, UseGuards, Req, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from './products.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('products')
 export class ProductsController {

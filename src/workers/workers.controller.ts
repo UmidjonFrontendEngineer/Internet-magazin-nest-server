@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { WorkersService } from './workers.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateWorkerDto } from './dto/create-worker.dto';
 
 @Controller('workers')

@@ -6,8 +6,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { SlidersService } from './sliders.service';
 import { CreateSliderDto } from './dto/create-slider.dto';
 import { UpdateSliderDto } from './dto/update-slider.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { uploadImageToImgBB } from 'src/common/helpers/image-upload.helper';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { uploadImageToImgBB } from '../common/helpers/image-upload.helper';
 
 @Controller('sliders')
 export class SlidersController {

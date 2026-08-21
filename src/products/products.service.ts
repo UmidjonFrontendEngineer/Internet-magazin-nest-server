@@ -1,6 +1,6 @@
 import { Injectable, Inject, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { Pool } from 'pg';
-import { uploadImageToImgBB } from 'src/common/helpers/image-upload.helper';
+import { uploadImageToImgBB } from '../common/helpers/image-upload.helper';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()

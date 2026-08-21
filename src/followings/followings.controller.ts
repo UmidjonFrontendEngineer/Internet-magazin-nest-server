@@ -1,6 +1,6 @@
 import { Controller, Get, Patch, Param, Body, UseGuards, Req } from '@nestjs/common';
 import { FollowingsService } from './followings.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('followings')
 export class FollowingsController {
