@@ -19,8 +19,8 @@ export class WarehousesController {
         @Body() body: CreateWarehouseDto
     ) {
         const validation = {
-            authorization: headers['authorization'],
-            marketId: headers['marketid'],
+            authorization: headers['authorization'] || headers['Authorization'],
+            marketId: headers['marketid'] || headers['marketId'],
             role: headers['role'],
         };
 
