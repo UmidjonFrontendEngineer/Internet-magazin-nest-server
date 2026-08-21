@@ -9,7 +9,7 @@ async function bootstrap() {
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With',
+    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With, marketId, role',
   });
 
   app.use(express.json({ limit: '10mb' }));
